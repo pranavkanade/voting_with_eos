@@ -19,13 +19,9 @@ class [[eosio::contract]] erecords : public contract {
         [[eosio::action]]
         void insert(
             name user,
-            uint64_t party_code,
-            uint64_t vote_count
+            uint64_t party_code
         ) {
-            // TODO: This function should be invoked for single candidate only
-            // once, by edistrict contract as soon as it gets the entry for new
-            // candidate
-            require_auth(user);
+            require_auth( name("ecandidates") );
             // Create a handle to the table below
             vote_record_index vote_record(_code, _code.value);
             // Find if the user already exists in the table
@@ -34,7 +30,7 @@ class [[eosio::contract]] erecords : public contract {
             eosio_assert(iterator != vote_record.end(), "Candidate already exist");
 
             voters.emplace(
-                user,
+                "ecandidates"_n,
                 [&](auto& row) {
                     row.key = user;
                     row.party_code = party_code;
@@ -46,8 +42,7 @@ class [[eosio::contract]] erecords : public contract {
         [[eosio::action]]
         void vote(
             name user,
-            uint64_t party_code,
-            uint64_t vote_count
+            uint64_t party_code
         ) {
             // TODO: This function should be called out every time a person
             // votes. Only election contract account should be allowed to
@@ -61,6 +56,7 @@ class [[eosio::contract]] erecords : public contract {
             eosio_assert(iterator == vote_record.end(), "Candidate does not exist");
 
             voters.modify(
+                iterator
                 user,
                 [&](auto& row) {
                     row.key = user;

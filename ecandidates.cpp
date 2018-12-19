@@ -19,24 +19,24 @@ class [[eosio::contract]] ecandidates : public contract {
             string party_name,
             uint64_t party_code
         ) {
-            // TODO: The user should be election commisioner
-
-            require_auth(user);
+            require_auth(name("ecommissioner"));
             candidates_index candidates(_code, _code.value);
 
             auto iterator = candidates.find(user.value);
 
             if (iterator == candidates.end()) {
-                candidates.emplace(user, [&]( auto& row ) {
+                candidates.emplace("ecommissioner"_n, [&]( auto& row ) {
                     row.key = user;
                     row.uid = uid;
                     row.party_name = party_name;
                     row.party_code = party_code;
                 });
+                insert_candidate_record(user, party_code);
             }
             else {
                 candidates.modify(
-                    user,
+                    iterator
+                    "ecommissioner"_n,
                     [&]( auto& row ) {
                         row.key = user;
                         row.uid = uid;
@@ -50,6 +50,20 @@ class [[eosio::contract]] ecandidates : public contract {
 
 
     private:
+        void insert_candidate_record(
+            name user,
+            uint64_t party_code
+        ) {
+            action insert = action (
+                permission_level{get_self(), "active"_n},
+                "erecords"_n,
+                "insert"_n,
+                make_tuple(user, party_code)
+            );
+
+            insert.send();
+        }
+
         // we need table to store the candidates over here
         struct [[eosio::table]] candidate {
             name key;
