@@ -16,7 +16,6 @@ class [[eosio::contract]] evoters : public contract {
         ): contract(receiver, code, ds) {}
 
         // upsert
-        // TODO: The author of this action should be election commisiner account
         [[eosio::action]]
         void upsert(
             name user,
@@ -25,7 +24,7 @@ class [[eosio::contract]] evoters : public contract {
             uint64_t uid
         ) {
             // check if correct user has called out the action
-            require_auth(user);
+            require_auth(name("ecommissioner"));
             // Create a handle to the table below
             voters_index voters(_code, _code.value);
             // Find if the user already exists in the table
@@ -34,7 +33,7 @@ class [[eosio::contract]] evoters : public contract {
             if (iterator == voters.end()) {
                 // table does not have user info
                 voters.emplace(
-                    user,
+                    "ecommissioner"_n,
                     [&](auto& row) {
                         row.key = user;
                         row.age = age;
@@ -45,7 +44,10 @@ class [[eosio::contract]] evoters : public contract {
             }
             else {
                 // table does have the user info
-                voters.modify(
+                // NOTE: This is available but should not be used
+                // Have no mechanism setup to reflect the change to erecords
+                voters.modify(,
+                    iterator,
                     user,
                     [&](auto& row) {
                         row.age = age;

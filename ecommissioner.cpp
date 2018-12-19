@@ -29,6 +29,23 @@ class [[eosio::contract]] ecommissioner : public contract {
                 party_name
             );
         }
+
+        [[eosio::action]]
+        void register_as_voter(
+            name user,
+            uint64_t age,
+            uint64_t aadhar_no;
+            uint64_t uid
+        ) {
+            requrie_auth(user);
+
+            add_voters(
+                user,
+                age,
+                aadhar_no,
+                uid
+            );
+        }
     private:
         void add_candidates(
             name user,
@@ -46,5 +63,19 @@ class [[eosio::contract]] ecommissioner : public contract {
             add.send()
         }
 
-        // TODO: Add another notification action for the evoters
+        void add_voters(
+            name user,
+            uint64_t age,
+            uint64_t aadhar_no;
+            uint64_t uid
+        ) {
+            action add = action (
+                permission_level{get_self(), "active"_n},
+                "evoters"_n,
+                "upsert"_n,
+                make_tuple(user, age, aadhar_no, uid)
+            );
+
+            add.send()
+        }
 }
