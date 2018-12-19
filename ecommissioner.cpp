@@ -60,7 +60,7 @@ class [[eosio::contract]] ecommissioner : public contract {
                 make_tuple(user, uid, party_name, party_code)
             );
 
-            add.send()
+            add.send();
         }
 
         void add_voters(
@@ -76,6 +76,6 @@ class [[eosio::contract]] ecommissioner : public contract {
                 make_tuple(user, age, aadhar_no, uid)
             );
 
-            add.send()
+            add.send();
         }
 }
