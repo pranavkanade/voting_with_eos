@@ -5,11 +5,11 @@
 using namespace std;
 using namespace eosio;
 
-class [[eosio::contract]] edistrict : public contract {
+class [[eosio::contract]] ecandidates : public contract {
     public:
         using contract::contract;
 
-        edistrict(name receiver, name code, datastream<const char*> ds) :
+        ecandidates(name receiver, name code, datastream<const char*> ds) :
             contract(receiver, code, ds) {}
 
         [[eosio::action]]
