@@ -47,7 +47,7 @@ class [[eosio::contract]] erecords : public contract {
             // TODO: This function should be called out every time a person
             // votes. Only election contract account should be allowed to
             // call out this function using notification mechanism.
-            require_auth(user);
+            require_auth(name("election"));
             // Create a handle to the table below
             vote_record_index vote_record(_code, _code.value);
             // Find if the user already exists in the table
@@ -57,10 +57,8 @@ class [[eosio::contract]] erecords : public contract {
 
             voters.modify(
                 iterator
-                user,
+                "election"_n,
                 [&](auto& row) {
-                    row.key = user;
-                    row.party_code = party_code;
                     row.vote_count += 1;
                 }
             );
