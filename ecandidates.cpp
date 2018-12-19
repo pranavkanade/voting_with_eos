@@ -15,7 +15,7 @@ class [[eosio::contract]] ecandidates : public contract {
         [[eosio::action]]
         void upsert(
             name user,
-            uint64_t age,
+            uint64_t uid,
             string party_name,
             uint64_t party_code
         ) {
@@ -29,7 +29,7 @@ class [[eosio::contract]] ecandidates : public contract {
             if (iterator == candidates.end()) {
                 candidates.emplace(user, [&]( auto& row ) {
                     row.key = user;
-                    row.age = age;
+                    row.uid = uid;
                     row.party_name = party_name;
                     row.party_code = party_code;
                 });
@@ -39,7 +39,7 @@ class [[eosio::contract]] ecandidates : public contract {
                     user,
                     [&]( auto& row ) {
                         row.key = user;
-                        row.age = age;
+                        row.uid = uid;
                         row.party_name = party_name;
                         row.party_code = party_code;
                     }
@@ -53,7 +53,7 @@ class [[eosio::contract]] ecandidates : public contract {
         // we need table to store the candidates over here
         struct [[eosio::table]] candidate {
             name key;
-            uint64_t age;
+            uint64_t uid;
             string party_name;
             uint64_t party_code;
 
