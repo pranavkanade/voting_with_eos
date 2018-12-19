@@ -10,12 +10,13 @@ class [[eosio::contract]] evoters : public contract {
         using contract::contract;
 
         evoters(
-            name user,
+            name receiver,
             name code,
             datastream<const char*> ds
-        ): contract(user, code, ds) {}
+        ): contract(receiver, code, ds) {}
 
         // upsert
+        // TODO: The author of this action should be election commisiner account
         [[eosio::action]]
         void upsert(
             name user,
@@ -53,6 +54,20 @@ class [[eosio::contract]] evoters : public contract {
                     }
                 );
             }
+        }
+
+        // TODO: This should be only done by the election commisioner account
+        [[eosio::action]]
+        void erase(
+            name user
+        ) {
+            require_auth(user);
+            voters_index voters(_code, _code.value);
+
+            auto iterator = voters.find(user.value);
+            eosio_assert(iterator != voters.end(), "Record does not exist");
+
+            voters.erase(iterator);
         }
     private:
         // Create a table to hold the info regarding all the voters
